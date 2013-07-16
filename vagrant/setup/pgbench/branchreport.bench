@@ -1,0 +1,7 @@
+\set scale 10
+\set nbranches :scale
+\setrandom bid 1 :nbranches
+\setrandom randsleep 100 250
+SELECT bid, count(aid), sum(abalance) FROM pgbench_accounts WHERE bid = :bid GROUP BY bid;
+SELECT bid, tid, count(*), sum(delta) FROM pgbench_history WHERE bid = :bid GROUP BY bid, tid ORDER BY bid, tid;
+\sleep :randsleep ms

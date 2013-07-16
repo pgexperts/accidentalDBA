@@ -1,0 +1,286 @@
+Text Format Exercises for The Accidental DBA
+============================================
+
+Exercises are meant to be performed in order.  
+Some may not work out of order.  See accompanying
+presentation in order to understand them.
+
+vagrant up and login
+--------------------
+
+cd /dir/to/accidentalDBA/vagrant/
+vagrant up
+vagrant ssh
+sudo su -
+tmux
+
+packages
+--------
+
+less /etc/apt/sources.list.d/pgdg.list
+apt-cache search postgresql
+
+initdb
+------
+
+su – postgres
+mkdir test
+initdb -D test
+cd test
+ls -l
+exit
+
+start/stop
+----------
+
+service postgresql start
+service postgresql restart
+service postgresql reload
+service postgresql stop
+su - postgres
+pg_ctl -D /etc/postgresql/9.2/main start
+pg_ctl -D /etc/postgresql/9.2/main -m fast stop
+exit
+service postgresql start
+
+psql
+----
+
+su – postgres
+psql libdata
+\?
+\h create table
+\dt
+\d+ copies
+
+extensions
+----------
+
+\dx
+create extension hstore;
+select * from pg_extension;
+select 'fname => josh,
+  lname => berkus'::hstore;
+
+tmux new window
+---------------
+
+<ctrl>b,c
+<ctrl>b,n
+<ctrl>b,n
+
+kernel parameters
+-----------------
+
+less /etc/sysctl.d/30-postgresql-shm.conf
+
+xlog directory
+--------------
+
+<ctrl>b,n
+cd 9.2/main/pg_xlog
+ls -lh
+
+postgresql.conf
+---------------
+
+cd /etc/postgresql/9.2/main
+$EDITOR postgresql.conf
+psql
+show max_connections;
+show all;
+\x
+select * from pg_settings;
+
+($EDITOR can be joe, jmacs, vi, or nano)
+
+create user
+-----------
+
+psql
+create user 'bench' password 'benchmark';
+\du
+\q
+
+pg_hba.conf
+-----------
+
+<ctrl>b,n
+$EDITOR /etc/postgresql/9.2/main/pg_hba.conf
+service postgresql reload
+<ctrl>b,n
+psql
+\q
+psql -U bench
+\q
+cd ~
+cp /setup/postgres/.pgpass .
+chmod 700 .pgpass
+less .pgpass
+psql -U bench
+
+pgbench
+-------
+
+createdb bench
+pgbench -U bench -i -s 10
+<ctrl>b,n
+
+pgbouncer
+---------
+
+less /etc/pgbouncer/pgbouncer.ini
+less /etc/pgbouncer/userlist.txt
+service pgbouncer start
+<ctrl>b,n
+psql -U bench -p 6432
+\q
+cd /setup/pgbench
+less runbench_pool.sh
+./runbench_pool.sh
+<ctrl>b,n
+su – postgres
+psql
+select * from pg_stat_activity;
+\q
+<ctrl>b,n
+<ctrl>c
+
+pgdump
+------
+
+cd ~
+pg_dump -Fc -v -f backup/libdata.dump libdata
+ls -lh backup/libdata.dump
+pg_restore -l backup/libdata.dump
+createdb libdata2
+pg_restore -v -d libdata2 backup/libdata.dump
+psql libdata2
+\dt
+\q
+
+PITR
+-----
+
+<ctrl>b,n
+exit
+$EDITOR /etc/postgresql/9.2/main/postgresql.conf
+$EDITOR /etc/postgresql/9.2/main/pg_hba.conf
+service postgresql restart
+less /setup/postgres/archive_logs.sh
+<ctrl>b,n
+cd ~
+pg_basebackup -x -P -D 9.2/replica
+cd wal_archive
+ls -lh
+
+replication
+-----------
+
+<ctrl>b,n
+cd ~/9.2/replica
+cp -p -r /setup/postgres/archive/* .
+less recovery.conf
+pg_ctl -D . start
+psql -p 5433
+select pg_is_in_recovery();
+\q
+psql -p 5432
+select * from pg_stat_replication;
+\q
+pg_ctl -D . promote
+psql -p 5433
+select * from pg_is_in_recovery();
+\q
+pg_ctl -D . stop
+
+database activity
+-----------------
+
+<ctrl>b,n
+$EDITOR /etc/postgresql/9.2/main/postgresql.conf
+service postgresql reload
+<ctrl>b,n
+cd /setup/pgbench
+runbench_log.sh
+<ctrl>b,n
+su – postgres
+psql
+select * from pg_stat_activity;
+\x
+select * from pg_stat_activity;
+\c bench
+select * from pg_stat_user_tables;
+select pg_size_pretty(pg_total_relation_size('pgbench_history'));
+select * from pg_stat{TAB}
+
+database activity log
+---------------------
+
+exit
+cd /var/log/postgresql
+less activitylog-Mon.csv
+pgbadger --format csv --out /setup/postgres/badger.html activitylog-Tue.csv
+
+vacuum
+------
+
+<ctrl>b,n
+psql bench
+\x
+select * from pg_stat_user_tables;
+select pg_total_relation_size('pgbench_tellers');
+vacuum analyze pgbench_tellers;
+select pg_total_relation_size('pgbench_tellers');
+vacuum full pgbench_tellers;
+select pg_total_relation_size('pgbench_tellers');
+
+vacuum freeze
+-------------
+
+select relname, age(relfrozenxid) as xid_age
+from pg_class JOIN pg_stat_user_tables USING (relname) order by xid_age desc;
+VACUUM FREEZE;
+select relname, age(relfrozenxid) as xid_age
+from pg_class JOIN pg_stat_user_tables USING (relname) order by xid_age desc;
+
+analyze and stats
+-----------------
+
+\a
+select * from pg_stats where schemaname = 'public';
+
+zombie killing
+--------------
+
+cd /setup/pgbench
+runbench_locks.sh
+<ctrl>b,n
+su – postgres
+psql bench
+select * from pg_stat_activity;
+
+select pg_cancel_backend(pid)
+from pg_stat_activity
+where state = 'idle in transaction'
+and state_change < ( now() - interval '10 seconds');
+
+select * from pg_stat_activity;
+
+explain analyze
+---------------
+
+explain select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
+explain analyze select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
+explain ( analyze on, buffers on ) select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
+explain ( analyze on, format yaml ) select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
+
+\i /setup/postgres/explain_quarterly_report.sql
+
+end vagrant
+-----------
+
+<ctrl>b,d
+exit
+exit
+vagrant destroy

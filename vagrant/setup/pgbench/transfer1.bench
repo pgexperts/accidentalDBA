@@ -1,0 +1,22 @@
+\set scale 10
+\set nbranches :scale
+\set ntellers 10 * :scale
+\setrandom aida 1 100
+\setrandom aidb 1 100
+\setrandom bida 1 :nbranches
+\setrandom bidb 1 :nbranches
+\setrandom tid 1 :ntellers
+\setrandom delta 1 1000
+\setrandom randsleep 500 1500
+BEGIN;
+UPDATE pgbench_accounts SET abalance = abalance - :delta WHERE aid = :aida;
+SELECT abalance FROM pgbench_accounts WHERE aid = :aida;
+\sleep :randsleep ms
+UPDATE pgbench_accounts SET abalance = abalance + :delta WHERE aid = :aidb;
+SELECT abalance FROM pgbench_accounts WHERE aid = :aidb;
+\sleep :randsleep ms
+UPDATE pgbench_branches SET bbalance = bbalance - :delta WHERE bid = :bida;
+UPDATE pgbench_branches SET bbalance = bbalance + :delta WHERE bid = :bidb;
+INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bida, :aida, :delta, CURRENT_TIMESTAMP);
+INSERT INTO pgbench_history (tid, bid, aid, delta, mtime) VALUES (:tid, :bidb, :aidb, :delta, CURRENT_TIMESTAMP);
+END;

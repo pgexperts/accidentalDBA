@@ -1,0 +1,12 @@
+\set scale 10
+\set nbranches :scale
+\set ntellers 10 * :scale
+\setrandom aida 1 100
+\setrandom bida 1 :nbranches
+\setrandom tid 1 :ntellers
+\setrandom delta 1 100
+BEGIN;
+UPDATE pgbench_accounts SET abalance = abalance - :delta WHERE aid = :aida;
+SELECT abalance FROM pgbench_accounts WHERE aid = :aida;
+\sleep 600 s
+END;

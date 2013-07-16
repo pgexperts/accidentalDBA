@@ -1,0 +1,7 @@
+\set scale 10
+\set naccounts 100000 * :scale
+\setrandom aid 1 :naccounts
+\setrandom delta 1 1000
+\setrandom randsleep 100 250
+SELECT abalance > :delta FROM pgbench_accounts WHERE aid = :aid;
+\sleep :randsleep ms
