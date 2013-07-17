@@ -83,7 +83,7 @@ it, and start it up.  Verify that you can log into it with:
 Now log out with "exit".  Shut down the VM, but leave it set up in preparation
 for the tutorial:
 
-    vagrant halt
+    vagrant suspend
 
 32-Bit Machines
 ===============
