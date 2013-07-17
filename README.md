@@ -98,6 +98,9 @@ that they will work that way.  The way to switch to 32-bit is:
 
 If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
 
+According to one attendee, pgbadger does not install on the 32-bit version.  
+pgbadger is only used in one exercise, however.
+
 Other Files In This Package
 ===========================
 
