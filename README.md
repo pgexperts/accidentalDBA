@@ -26,8 +26,8 @@ Software and Wetware:
 * familiarity with the bash/linux command line
 * familiarity with one or more command-line text editors
 
-Installing Vagrant
-==================
+Installing Vagrant and VirtualBox
+=================================
 
 Go to http://www.vagrantup.com/
 
@@ -35,6 +35,11 @@ The Vagrant website has download packages, instructions
 on how to install and configure vagrant on various OSes, and
 a "getting started" guide.  Please install and configure
 vagrant _right away_; this will take around an hour.
+
+You will also need VirtualBox. The [Vagrant website has
+instructions on installing VirtualBox as
+well](http://docs.vagrantup.com/v2/virtualbox/index.html)
+
 
 Installing Tutorial Exercises
 =============================
