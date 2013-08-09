@@ -115,6 +115,21 @@ The AccidentalDBA package also contains the following files in the Tutorial dire
 * accidental_dba_oscon.pdf = PDF presentation files
 * exercises.txt = text file of exercises for the hands-on portion
 
+License
+=======
+
+The Accidental DBA tutorial is Copyright 2013 PostgreSQL Experts Inc.
+
+All slides, text, instructions and similar content in this tutorial are
+licensed [Creative Commons Attribution-ShareAlike 3.0]
+(http://creativecommons.org/licenses/by-sa/3.0/us/)
+
+Code exercises and sample databases are licensed under the 
+[Gnu Public License Version 2]
+(http://www.gnu.org/licenses/gpl-2.0.html)
+
+All other rights reserved.
+
 
 
 
