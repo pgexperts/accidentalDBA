@@ -38,8 +38,8 @@ service postgresql restart
 service postgresql reload
 service postgresql stop
 su - postgres
-pg_ctl -D /etc/postgresql/9.2/main start
-pg_ctl -D /etc/postgresql/9.2/main -m fast stop
+pg_ctl -D /etc/postgresql/9.3/main start
+pg_ctl -D /etc/postgresql/9.3/main -m fast stop
 exit
 service postgresql start
 
@@ -78,13 +78,13 @@ xlog directory
 --------------
 
 <ctrl>b,n
-cd 9.2/main/pg_xlog
+cd 9.3/main/pg_xlog
 ls -lh
 
 postgresql.conf
 ---------------
 
-cd /etc/postgresql/9.2/main
+cd /etc/postgresql/9.3/main
 $EDITOR postgresql.conf
 psql
 show max_connections;
@@ -97,8 +97,8 @@ select * from pg_settings;
 create user
 -----------
 
-psql
-create user 'bench' password 'benchmark';
+\x
+create user bench password 'benchmark';
 \du
 \q
 
@@ -106,18 +106,18 @@ pg_hba.conf
 -----------
 
 <ctrl>b,n
-$EDITOR /etc/postgresql/9.2/main/pg_hba.conf
+$EDITOR /etc/postgresql/9.3/main/pg_hba.conf
 service postgresql reload
 <ctrl>b,n
 psql
 \q
-psql -U bench
+psql -U bench postgres
 \q
 cd ~
 cp /setup/postgres/.pgpass .
 chmod 700 .pgpass
 less .pgpass
-psql -U bench
+psql -U bench postgres
 
 pgbench
 -------
@@ -164,13 +164,13 @@ PITR
 
 <ctrl>b,n
 exit
-$EDITOR /etc/postgresql/9.2/main/postgresql.conf
-$EDITOR /etc/postgresql/9.2/main/pg_hba.conf
+$EDITOR /etc/postgresql/9.3/main/postgresql.conf
+$EDITOR /etc/postgresql/9.3/main/pg_hba.conf
 service postgresql restart
 less /setup/postgres/archive_logs.sh
 <ctrl>b,n
 cd ~
-pg_basebackup -x -P -D 9.2/replica
+pg_basebackup -x -P -D 9.3/replica
 cd wal_archive
 ls -lh
 
@@ -178,7 +178,7 @@ replication
 -----------
 
 <ctrl>b,n
-cd ~/9.2/replica
+cd ~/9.3/replica
 cp -p -r /setup/postgres/archive/* .
 less recovery.conf
 pg_ctl -D . start
@@ -198,7 +198,7 @@ database activity
 -----------------
 
 <ctrl>b,n
-$EDITOR /etc/postgresql/9.2/main/postgresql.conf
+$EDITOR /etc/postgresql/9.3/main/postgresql.conf
 service postgresql reload
 <ctrl>b,n
 cd /setup/pgbench

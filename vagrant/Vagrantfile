@@ -7,11 +7,10 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "precise64.box"
+  config.vm.box = "ubuntu/trusty64"
 
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  # 32-bit version, if required
+  # config.vm.box = "ubuntu/trusty32"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -45,6 +44,8 @@ Vagrant.configure("2") do |config|
      # Use VBoxManage to customize the VM. For example to change memory:
      # memory is set to 384MB
      vb.customize ["modifyvm", :id, "--memory", "384"]
+     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # provision

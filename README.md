@@ -1,6 +1,8 @@
 Accidental DBA Tutorial Files
 =============================
 
+Version 0.4.  Updated for OSCON 2014 and PostgreSQL 9.3
+
 This repository contains files for the Accidental DBA tutorial.
 These files are required to perform the hands-on exercises.
 Importantly, there is significant setup required in order to
@@ -9,6 +11,10 @@ tutorial starts, so please read the below.
 
 **All steps through Vagrant Up should be completed before
 getting to the tutorial**
+
+Note: I am working on a Docker version of the tutorial, and
+it is possible that one will be ready before OSCON.  Check back here
+for details on July 14th.
 
 Requirements
 =============
@@ -35,6 +41,8 @@ The Vagrant website has download packages, instructions
 on how to install and configure vagrant on various OSes, and
 a "getting started" guide.  Please install and configure
 vagrant _right away_; this will take around an hour.
+
+Vagrant version 1.6 or later is required.
 
 You will also need VirtualBox. The [Vagrant website has
 instructions on installing VirtualBox as
@@ -93,11 +101,11 @@ for the tutorial:
 32-Bit Machines
 ===============
 
-The exercises have not been tested on a 32-bit VM.  However, it's quite possible
-that they will work that way.  The way to switch to 32-bit is:
+The exercises have not been tested on a 32-bit VM.  However, they are expected to work.
+The way to switch to 32-bit is:
 
 1. open the file "VagrantFile" in a text editor
-2. change every instance of "precise64" to "precise32"
+2. comment out the 64-bit version of the box command, and uncomment the 32-bit version
 3. save
 4. run "vagrant up"
 
@@ -105,6 +113,11 @@ If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
 
 According to one attendee, pgbadger does not install on the 32-bit version.  
 pgbadger is only used in one exercise, however.
+
+Docker
+======
+
+A Docker version of the tutorial is not yet available.  I'm working on it.
 
 Other Files In This Package
 ===========================
@@ -118,7 +131,7 @@ The AccidentalDBA package also contains the following files in the Tutorial dire
 License
 =======
 
-The Accidental DBA tutorial is Copyright 2013 PostgreSQL Experts Inc.
+The Accidental DBA tutorial is Copyright 2014 PostgreSQL Experts Inc.
 
 All slides, text, instructions and similar content in this tutorial are
 licensed [Creative Commons Attribution-ShareAlike 3.0]

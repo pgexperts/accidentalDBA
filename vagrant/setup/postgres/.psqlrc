@@ -1,0 +1,4 @@
+\pset format wrapped
+\pset linestyle unicode
+\pset null 'NULL'
+\pset border 1
