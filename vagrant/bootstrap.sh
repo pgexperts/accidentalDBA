@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # setup apt-get to pull from apt.postgresql.org
-echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 #add pgbadger PPA
@@ -29,7 +29,7 @@ apt-get -y -q install tmux
 
 echo ''
 echo 'vagrant loaded and ready for tutorial'
-echo 'version 0.4 of AccidentalDBA environment'
+echo 'version 0.5 of AccidentalDBA environment'
 
 exit 0
 

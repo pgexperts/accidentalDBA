@@ -20,6 +20,7 @@ mkdir /var/lib/postgresql/wal_archive
 mkdir /var/lib/postgresql/9.3/replica
 mkdir /var/lib/postgresql/backup
 chown postgres:postgres /var/lib/postgresql/*.*
+chown -R postgres:postgres /var/lib/postgresql
 chmod 700 /var/lib/postgresql/9.3/replica
 
 #link pg_ctl

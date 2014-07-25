@@ -5,6 +5,19 @@ Exercises are meant to be performed in order.
 Some may not work out of order.  See accompanying
 presentation in order to understand them.
 
+Constants
+---------
+
+EDITOR is your choice of command-line text editor:
+
+* vi
+* joe (a simple text editor)
+* nano (best for Linux newbies)
+* jmacs (lightweight version of emacs)
+
+DOW is the current day of the week, as an abbreviation, used
+in log file names, such as "Mon", "Tue", or "Fri".
+
 vagrant up and login
 --------------------
 
@@ -41,7 +54,15 @@ su - postgres
 pg_ctl -D /etc/postgresql/9.3/main start
 pg_ctl -D /etc/postgresql/9.3/main -m fast stop
 exit
+cd /etc/postgresql/9.3/main/
+EDITOR postgresql.conf
+*add the line "not_a_parameter = true" at the top*
 service postgresql start
+less /var/log/postgresql/postgresql-DOW.log
+EDITOR postgresql.conf
+*delete the line "not_a_parameter = true"*
+service postgresql start
+less /var/log/postgresql/postgresql-DOW.log
 
 psql
 ----
@@ -85,14 +106,13 @@ postgresql.conf
 ---------------
 
 cd /etc/postgresql/9.3/main
-$EDITOR postgresql.conf
+EDITOR postgresql.conf
+*no editing; just going over the file and what it contains*
 psql
 show max_connections;
 show all;
 \x
 select * from pg_settings;
-
-($EDITOR can be joe, jmacs, vi, or nano)
 
 create user
 -----------
@@ -107,6 +127,8 @@ pg_hba.conf
 
 <ctrl>b,n
 $EDITOR /etc/postgresql/9.3/main/pg_hba.conf
+*comment out the two "trust" lines which are the first
+uncommented lines*
 service postgresql reload
 <ctrl>b,n
 psql
@@ -141,7 +163,7 @@ less runbench_pool.sh
 <ctrl>b,n
 su – postgres
 psql
-select * from pg_stat_activity;
+select count(*) from pg_stat_activity;
 \q
 <ctrl>b,n
 <ctrl>c
@@ -165,7 +187,9 @@ PITR
 <ctrl>b,n
 exit
 $EDITOR /etc/postgresql/9.3/main/postgresql.conf
+*uncomment the parameters in the replication section*
 $EDITOR /etc/postgresql/9.3/main/pg_hba.conf
+*uncomment the replication connection lines at the bottom*
 service postgresql restart
 less /setup/postgres/archive_logs.sh
 <ctrl>b,n
@@ -199,6 +223,8 @@ database activity
 
 <ctrl>b,n
 $EDITOR /etc/postgresql/9.3/main/postgresql.conf
+*comment out the logging parameters, and uncomment the logging
+parameters in the "querly logging example" subsection*
 service postgresql reload
 <ctrl>b,n
 cd /setup/pgbench
@@ -220,7 +246,7 @@ database activity log
 exit
 cd /var/log/postgresql
 less activitylog-Mon.csv
-pgbadger --format csv --out /setup/postgres/badger.html activitylog-Tue.csv
+pgbadger --format csv --out /setup/postgres/badger.html activitylog-DOW.csv
 
 vacuum
 ------

@@ -1,7 +1,7 @@
 Accidental DBA Tutorial Files
 =============================
 
-Version 0.4.  Updated for OSCON 2014 and PostgreSQL 9.3
+Version 0.5.  Updated to correct issues found during OSCON 2014
 
 This repository contains files for the Accidental DBA tutorial.
 These files are required to perform the hands-on exercises.
@@ -12,9 +12,8 @@ tutorial starts, so please read the below.
 **All steps through Vagrant Up should be completed before
 getting to the tutorial**
 
-Note: I am working on a Docker version of the tutorial, and
-it is possible that one will be ready before OSCON.  Check back here
-for details on July 14th.
+Note: I am working on a Docker version of the tutorial, which
+will be ready before FOSS4G.
 
 Requirements
 =============
@@ -42,7 +41,7 @@ on how to install and configure vagrant on various OSes, and
 a "getting started" guide.  Please install and configure
 vagrant _right away_; this will take around an hour.
 
-Vagrant version 1.6 or later is required.
+Vagrant version 1.4.3 or later is required.
 
 You will also need VirtualBox. The [Vagrant website has
 instructions on installing VirtualBox as
@@ -70,7 +69,7 @@ This will require the programs "tar" and "gzip" to expand, as follows:
 
     tar -p -xvf accidentalDBA.tgz
 
-We apologize for not providing a "zip" formatted archive, but zip does not
+I apologize for not providing a "zip" formatted archive, but zip does not
 preserve file permissions, which would cause issues.
 
 The accidentalDBA directory should be placed somewhere you have disk
@@ -112,7 +111,7 @@ The way to switch to 32-bit is:
 If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
 
 According to one attendee, pgbadger does not install on the 32-bit version.  
-pgbadger is only used in one exercise, however.
+pgbadger is only used in one exercise.
 
 Docker
 ======
@@ -128,10 +127,25 @@ The AccidentalDBA package also contains the following files in the Tutorial dire
 * accidental_dba_oscon.pdf = PDF presentation files
 * exercises.txt = text file of exercises for the hands-on portion
 
+Changelog
+=========
+
+**Version 0.5**: reverted to Ubuntu Precise because of issues with Trusty and
+Vagrant 1.4.  This will require starting the tutorial over from scratch for users
+who already started the Trusty version.  Fixed permissions issues encountered
+while running the tutorial.
+
+**Version 0.4**: upgraded to PostgreSQL 9.3 and Ubuntu Trusty.
+
+**Version 0.3**: version used for Evergreen Conference
+
+**Version 0.2**: Version used for OSCON 2013
+
+
 License
 =======
 
-The Accidental DBA tutorial is Copyright 2014 PostgreSQL Experts Inc.
+The Accidental DBA tutorial is Copyright 2013-2014 PostgreSQL Experts Inc.
 
 All slides, text, instructions and similar content in this tutorial are
 licensed [Creative Commons Attribution-ShareAlike 3.0]
