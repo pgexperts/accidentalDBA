@@ -3,6 +3,9 @@ Accidental DBA Tutorial Files
 
 Version 0.5.  Updated to correct issues found during OSCON 2014
 
+**NOT YET UPDATED for FOSS4G 2014.  Attendees will be notifed when
+the FOSS4G version is available.**
+
 This repository contains files for the Accidental DBA tutorial.
 These files are required to perform the hands-on exercises.
 Importantly, there is significant setup required in order to
