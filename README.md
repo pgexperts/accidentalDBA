@@ -1,10 +1,7 @@
 Accidental DBA Tutorial Files
 =============================
 
-Version 0.5.  Updated to correct issues found during OSCON 2014
-
-**NOT YET UPDATED for FOSS4G 2014.  Attendees will be notifed when
-the FOSS4G version is available.**
+Version 0.6.  Updated for FOSS4G.
 
 This repository contains files for the Accidental DBA tutorial.
 These files are required to perform the hands-on exercises.
@@ -14,9 +11,6 @@ tutorial starts, so please read the below.
 
 **All steps through Vagrant Up should be completed before
 getting to the tutorial**
-
-Note: I am working on a Docker version of the tutorial, which
-will be ready before FOSS4G.
 
 Requirements
 =============
@@ -34,22 +28,43 @@ Software and Wetware:
 * familiarity with the bash/linux command line
 * familiarity with one or more command-line text editors
 
-Installing Vagrant and VirtualBox
-=================================
+== Installing the Base Software ==
 
-Go to http://www.vagrantup.com/
+First, you will need to install Vagrant and VirtualBox if you do not
+already have them.  If you do already have them, please make sure that
+you have at least these minimum versions:
 
-The Vagrant website has download packages, instructions
-on how to install and configure vagrant on various OSes, and
-a "getting started" guide.  Please install and configure
-vagrant _right away_; this will take around an hour.
+* Vagrant 1.4.1 or later
+* VirtualBox 4.2 or later
 
-Vagrant version 1.4.3 or later is required.
+Otherwise, you're going to need to install them.  Fortunately, both have
+downloads for most OSes and extensive documentation.  And when you get
+used to them, you'll find Vagrant an invaluable tool for testing.
 
-You will also need VirtualBox. The [Vagrant website has
-instructions on installing VirtualBox as
-well](http://docs.vagrantup.com/v2/virtualbox/index.html)
+Vagrant Installation:
 
+* https://docs.vagrantup.com/v2/installation/
+* https://docs.vagrantup.com/v2/getting-started/
+
+VirtualBox Installation:
+
+* https://www.virtualbox.org/wiki/Downloads
+* https://www.virtualbox.org/wiki/End-user_documentation
+
+== Installing the Virtual Machine Image ==
+
+Once you've installed Vagrant and VirtualBox, you'll need to get an
+operating system image, or "box".  Please download one of the following
+large files:
+
+If you have a 64-bit laptop: http://files.vagrantup.com/precise64.box
+
+If you have a 32-bit laptop: http://files.vagrantup.com/precise32.box
+
+Then run the following command from the folder where you downloaded it:
+
+* 64-bit: vagrant box add precise precise64.box
+* 32-bit: vagrant box add precise precise32.box
 
 Installing Tutorial Exercises
 =============================
@@ -75,7 +90,7 @@ This will require the programs "tar" and "gzip" to expand, as follows:
 I apologize for not providing a "zip" formatted archive, but zip does not
 preserve file permissions, which would cause issues.
 
-The accidentalDBA directory should be placed somewhere you have disk
+The accidentalDBA directory should be placed somewhere you have at least 200MB of disk
 space available.
 
 Vagrant Up
@@ -90,8 +105,13 @@ Type the following:
 
     vagrant up
 
-This will download the "precise64" box (VM), install a bunch of software on
-it, and start it up.  Verify that you can log into it with:
+This will launch the "precise" box install a bunch of software on
+it, and start it up.  You will see a few trasitory errors during this process,
+most of them having to do with "not a tty".  You can ignore these.  However,
+if you see a solid block of red consisting of 4 or more lines, this
+means that something has gone wrong in bringing it up.
+
+Verify that you can log into it with:
 
     vagrant ssh
 
@@ -104,13 +124,6 @@ for the tutorial:
 ===============
 
 The exercises have not been tested on a 32-bit VM.  However, they are expected to work.
-The way to switch to 32-bit is:
-
-1. open the file "VagrantFile" in a text editor
-2. comment out the 64-bit version of the box command, and uncomment the 32-bit version
-3. save
-4. run "vagrant up"
-
 If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
 
 According to one attendee, pgbadger does not install on the 32-bit version.  
@@ -132,6 +145,9 @@ The AccidentalDBA package also contains the following files in the Tutorial dire
 
 Changelog
 =========
+
+**Version 0.6**: added PostGIS related content for FOSS4G, including PostGIS
+example database.  Changed how to handle 32 vs 64 bit.  
 
 **Version 0.5**: reverted to Ubuntu Precise because of issues with Trusty and
 Vagrant 1.4.  This will require starting the tutorial over from scratch for users

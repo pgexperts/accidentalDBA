@@ -20,6 +20,7 @@ apt-get -y -q install postgresql-plpython-9.3
 apt-get -y -q install pgbouncer
 apt-get -y -q install libtext-csv-perl
 apt-get -y -q install pgbadger
+apt-get -y -q install postgresql-9.3-postgis-2.1
 
 # install alternate editor and tmux
 apt-get -y -q install joe
@@ -29,7 +30,8 @@ apt-get -y -q install tmux
 
 echo ''
 echo 'vagrant loaded and ready for tutorial'
-echo 'version 0.5 of AccidentalDBA environment'
+echo 'version 0.6 of AccidentalDBA environment'
+echo 'now with PostGIS support!'
 
 exit 0
 

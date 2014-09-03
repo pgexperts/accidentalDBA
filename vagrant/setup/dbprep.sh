@@ -33,6 +33,7 @@ service postgresql restart
 # load the libdata database
 psql -U postgres -f /setup/postgres/libdata.users.sql postgres
 pg_restore -e -U postgres -d libdata /setup/postgres/libdata.dump
+pg_restore -e -O -x -U postgres -d earth /setup/postgres/earth.dump
 
 # stop postgresql
 service postgresql stop

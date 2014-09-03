@@ -8,3 +8,5 @@ ALTER DATABASE libdata OWNER TO libdata;
 
 ALTER ROLE postgres PASSWORD 'superuser';
 
+CREATE DATABASE earth;
+
