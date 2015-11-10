@@ -1,7 +1,7 @@
 Accidental DBA Tutorial Files
 =============================
 
-Version 0.6.  Updated for FOSS4G.
+Version 0.7.  Updated for pgConfSV.
 
 This repository contains files for the Accidental DBA tutorial.
 These files are required to perform the hands-on exercises.
@@ -9,7 +9,7 @@ Importantly, there is significant setup required in order to
 do the hands-on exercises which needs to happen _before_ the
 tutorial starts, so please read the below.
 
-**All steps through Vagrant Up should be completed before
+**All steps through Docker pull/Vagrant Up should be completed before
 getting to the tutorial**
 
 Requirements
@@ -28,13 +28,61 @@ Software and Wetware:
 * familiarity with the bash/linux command line
 * familiarity with one or more command-line text editors
 
-== Installing the Base Software ==
+Installing the Base Software
+----------------------------
+
+You have two choices in installing software: Docker and Vagrant.
+
+Docker is preferred: it's more lightweight, more modern, and
+is useful for things beyond testing.  However, installing it
+and using it requires a laptop with a fairly current OS.
+
+Whichever you choose, go with the appropriate section.
+
+Installing Docker
+=================
+
+Using Docker requires:
+
+* A Linux laptop, with Linux kernel 3.8 or later
+* Package docker-engine installed running version 1.7 or later
+
+OR:
+
+* A windows or Mac laptop running the Docker Toolbox or Kitematic
+
+[Docker Toolbox](https://www.docker.com/toolbox) is available from Docker. 
+We are not able to provide detailed instructions or assistance on configuring
+Docker Toolbox on Windows or Mac.  The Toolbox page, however, has an excellent
+tutorial.
+
+If installing on Linux, follow the instructions [on the Docker site](http://docs.docker.com/v1.8/installation/)
+to get a more current version of Docker.
+
+If you are unable to get Docker working, or are simply more comfortable 
+with Vagrant, then please see the Vagrant instructions after
+you have installed the tutorial exercises.
+
+Docker: Installing the Image
+----------------------------
+
+It is important that you download the Docker image before getting to the
+conference, as conference wifi may not be adequate for this.  So do:
+
+    docker pull jberkus/accidentaldba:latest
+    
+When this is done, the image will be installed on your laptop.  Test it:
+
+    docker run --rm -it jberkus/accidentaldba:latest
+
+Installing Vagrant
+==================
 
 First, you will need to install Vagrant and VirtualBox if you do not
 already have them.  If you do already have them, please make sure that
 you have at least these minimum versions:
 
-* Vagrant 1.4.1 or later
+* Vagrant 1.6 or later
 * VirtualBox 4.2 or later
 
 Otherwise, you're going to need to install them.  Fortunately, both have
@@ -51,7 +99,8 @@ VirtualBox Installation:
 * https://www.virtualbox.org/wiki/Downloads
 * https://www.virtualbox.org/wiki/End-user_documentation
 
-== Installing the Virtual Machine Image ==
+Vagrant: Installing the Virtual Machine Image
+---------------------------------------------
 
 Once you've installed Vagrant and VirtualBox, you'll need to get an
 operating system image, or "box".  Please download one of the following
@@ -65,6 +114,42 @@ Then run the following command from the folder where you downloaded it:
 
 * 64-bit: vagrant box add precise precise64.box
 * 32-bit: vagrant box add precise precise32.box
+
+Vagrant Up
+----------
+
+The first time you do vagrant up, it will require an internet connection
+with significant bandwidth and around 1/2 hour.  As such, you should do
+it at home, before you get to the conference or the tutorial.
+
+Open your terminal program. Navigate to accidentalDBA/vagrant directory.
+Type the following:
+
+    vagrant up
+
+This will launch the "precise" box install a bunch of software on
+it, and start it up.  You will see a few trasitory errors during this process,
+most of them having to do with "not a tty".  You can ignore these.  However,
+if you see a solid block of red consisting of 4 or more lines, this
+means that something has gone wrong in bringing it up.
+
+Verify that you can log into it with:
+
+    vagrant ssh
+
+Now log out with "exit".  Shut down the VM, but leave it set up in preparation
+for the tutorial:
+
+    vagrant suspend
+
+Vagrant: 32-Bit Machines
+------------------------
+
+The exercises have not been tested on a 32-bit VM.  However, they are expected to work.
+If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
+
+According to one attendee, pgbadger does not install on the 32-bit version. 
+pgbadger is only used in one exercise.
 
 Installing Tutorial Exercises
 =============================
@@ -93,58 +178,20 @@ preserve file permissions, which would cause issues.
 The accidentalDBA directory should be placed somewhere you have at least 200MB of disk
 space available.
 
-Vagrant Up
-==========
-
-The first time you do vagrant up, it will require an internet connection
-with significant bandwidth and around 1/2 hour.  As such, you should do
-it at home, before you get to the conference or the tutorial.
-
-Open your terminal program. Navigate to accidentalDBA/vagrant directory.
-Type the following:
-
-    vagrant up
-
-This will launch the "precise" box install a bunch of software on
-it, and start it up.  You will see a few trasitory errors during this process,
-most of them having to do with "not a tty".  You can ignore these.  However,
-if you see a solid block of red consisting of 4 or more lines, this
-means that something has gone wrong in bringing it up.
-
-Verify that you can log into it with:
-
-    vagrant ssh
-
-Now log out with "exit".  Shut down the VM, but leave it set up in preparation
-for the tutorial:
-
-    vagrant suspend
-
-32-Bit Machines
-===============
-
-The exercises have not been tested on a 32-bit VM.  However, they are expected to work.
-If it does not work on a 32-bit machine, please contact josh@pgexperts.com.
-
-According to one attendee, pgbadger does not install on the 32-bit version.  
-pgbadger is only used in one exercise.
-
-Docker
-======
-
-A Docker version of the tutorial is not yet available.  I'm working on it.
-
 Other Files In This Package
 ===========================
 
 The AccidentalDBA package also contains the following files in the Tutorial directory:
 
-* accidental_dba_oscon.odt = Libreoffice presentation files
-* accidental_dba_oscon.pdf = PDF presentation files
+* accidental_dba.odt = Libreoffice presentation files
+* accidental_dba.pdf = PDF presentation files
 * exercises.txt = text file of exercises for the hands-on portion
 
 Changelog
 =========
+
+**Version 0.7** removed PostGIS.  Added Docker support.  Added PITR restore
+exercise and pg_stat_statements.
 
 **Version 0.6**: added PostGIS related content for FOSS4G, including PostGIS
 example database.  Changed how to handle 32 vs 64 bit.  
@@ -160,11 +207,11 @@ while running the tutorial.
 
 **Version 0.2**: Version used for OSCON 2013
 
-
 License
 =======
 
-The Accidental DBA tutorial is Copyright 2013-2014 PostgreSQL Experts Inc.
+The Accidental DBA tutorial is Copyright 2013-2015 PostgreSQL Experts Inc.
+and Josh Berkus.
 
 All slides, text, instructions and similar content in this tutorial are
 licensed [Creative Commons Attribution-ShareAlike 3.0]

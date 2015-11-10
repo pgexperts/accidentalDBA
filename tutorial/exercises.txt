@@ -11,6 +11,7 @@ Constants
 EDITOR is your choice of command-line text editor:
 
 * vi
+* vim
 * joe (a simple text editor)
 * nano (best for Linux newbies)
 * jmacs (lightweight version of emacs)
@@ -26,6 +27,11 @@ vagrant up
 vagrant ssh
 sudo su -
 tmux
+
+docker run and login
+--------------------
+
+docker run -it -e TERM jberkus/accidentaldba:latest
 
 packages
 --------
@@ -51,16 +57,16 @@ service postgresql restart
 service postgresql reload
 service postgresql stop
 su - postgres
-pg_ctl -D /etc/postgresql/9.3/main start
-pg_ctl -D /etc/postgresql/9.3/main -m fast stop
+pg_ctl -D /etc/postgresql/9.4/main start
+pg_ctl -D /etc/postgresql/9.4/main -m fast stop
 exit
-cd /etc/postgresql/9.3/main/
+cd /etc/postgresql/9.4/main/
 EDITOR postgresql.conf
-*add the line "not_a_parameter = true" at the top*
+# add the line "not_a_parameter = true" at the top
 service postgresql start
 less /var/log/postgresql/postgresql-DOW.log
 EDITOR postgresql.conf
-*delete the line "not_a_parameter = true"*
+# delete the line "not_a_parameter = true"
 service postgresql start
 less /var/log/postgresql/postgresql-DOW.log
 
@@ -90,24 +96,19 @@ tmux new window
 <ctrl>b,n
 <ctrl>b,n
 
-kernel parameters
------------------
-
-less /etc/sysctl.d/30-postgresql-shm.conf
-
 xlog directory
 --------------
 
 <ctrl>b,n
-cd 9.3/main/pg_xlog
+cd 9.4/main/pg_xlog
 ls -lh
 
 postgresql.conf
 ---------------
 
-cd /etc/postgresql/9.3/main
+cd /etc/postgresql/9.4/main
 EDITOR postgresql.conf
-*no editing; just going over the file and what it contains*
+#no editing; just going over the file and what it contains
 psql
 show max_connections;
 show all;
@@ -126,20 +127,23 @@ pg_hba.conf
 -----------
 
 <ctrl>b,n
-$EDITOR /etc/postgresql/9.3/main/pg_hba.conf
-*comment out the two "trust" lines which are the first
-uncommented lines*
+$EDITOR /etc/postgresql/9.4/main/pg_hba.conf
+#comment out the two "trust" lines which are the first uncommented lines
 service postgresql reload
 <ctrl>b,n
 psql
 \q
 psql -U bench postgres
 \q
+<ctrl>b,n
+cp /setup/postgres/.pgpass ~postgres/
+chown postgres:postgres ~postgres/.pgpass
+<ctrl>b,n
 cd ~
-cp /setup/postgres/.pgpass .
 chmod 700 .pgpass
 less .pgpass
 psql -U bench postgres
+\q
 
 pgbench
 -------
@@ -157,7 +161,7 @@ service pgbouncer start
 <ctrl>b,n
 psql -U bench -p 6432
 \q
-cd /setup/pgbench
+cd ~/pgbench
 less runbench_pool.sh
 ./runbench_pool.sh
 <ctrl>b,n
@@ -186,25 +190,51 @@ PITR
 
 <ctrl>b,n
 exit
-$EDITOR /etc/postgresql/9.3/main/postgresql.conf
-*uncomment the parameters in the replication section*
-$EDITOR /etc/postgresql/9.3/main/pg_hba.conf
-*uncomment the replication connection lines at the bottom*
+$EDITOR /etc/postgresql/9.4/main/postgresql.conf
+#uncomment the parameters in the replication section
+$EDITOR /etc/postgresql/9.4/main/pg_hba.conf
+#uncomment the replication connection lines at the bottom
 service postgresql restart
 less /setup/postgres/archive_logs.sh
+su - postgres
+cd ~/pgbench
+sh runbench_log.sh
 <ctrl>b,n
+date
+# mark what time it is
+psql libdata
+drop table copy_history;
+\q
 cd ~
-pg_basebackup -x -P -D 9.3/replica
+pg_basebackup -c fast -P -D 9.4/replica
 cd wal_archive
 ls -lh
+cd ~/9.4/replica
+cp -p -r ~/archive/* .
+$EDITOR recovery.conf
+# set recovery_target_time to a few minutes ago
+pg_ctl -D . start
+tail -f /var/log/postgresql/postgresql-replica
+<ctrl>c
+psql -p 5433 libdata
+select pg_is_in_recovery();
+\dt
+select * from copy_history limit 10;
+select pg_xlog_replay_resume();
+select pg_is_in_recovery();
+\dt
+\q
 
 replication
 -----------
 
-<ctrl>b,n
-cd ~/9.3/replica
-cp -p -r /setup/postgres/archive/* .
-less recovery.conf
+pg_ctl -D . -m fast stop
+rm -rf *
+pg_basebackup -X stream -c fast -P -D .
+cp -p -r ~/archive/* .
+cp recovery.conf.replica recovery.conf
+$EDITOR recovery.conf
+# again, just looking around
 pg_ctl -D . start
 psql -p 5433
 select pg_is_in_recovery();
@@ -222,12 +252,15 @@ database activity
 -----------------
 
 <ctrl>b,n
-$EDITOR /etc/postgresql/9.3/main/postgresql.conf
-*comment out the logging parameters, and uncomment the logging
-parameters in the "querly logging example" subsection*
+$EDITOR /etc/postgresql/9.4/main/postgresql.conf
+#comment out the logging parameters, and uncomment the logging
+#parameters in the "query logging example" subsection
 service postgresql reload
 <ctrl>b,n
-cd /setup/pgbench
+psql bench
+create extension pg_stat_statements;
+\q
+cd ~/pgbench
 runbench_log.sh
 <ctrl>b,n
 su – postgres
@@ -238,6 +271,11 @@ select * from pg_stat_activity;
 \c bench
 select * from pg_stat_user_tables;
 select pg_size_pretty(pg_total_relation_size('pgbench_history'));
+select * from pg_stat_statements;
+\x
+select query, calls, total_time from pg_stat_statements order by calls desc limit 10;
+select query, calls, total_time/calls as avg_time from pg_stat_statements order by 3 desc limit 10;
+select query, calls, shared_blks_read/calls as avg_reads from pg_stat_statements order by 3 desc limit 10;
 select * from pg_stat{TAB}
 
 database activity log
@@ -245,8 +283,8 @@ database activity log
 
 exit
 cd /var/log/postgresql
-less activitylog-Mon.csv
-pgbadger --format csv --out /setup/postgres/badger.html activitylog-DOW.csv
+less activitylog-DOW.csv
+pgbadger --format csv -o ~/badger.html activitylog-DOW.csv
 
 vacuum
 ------
@@ -275,33 +313,45 @@ analyze and stats
 
 \a
 select * from pg_stats where schemaname = 'public';
+\q
 
 zombie killing
 --------------
 
-cd /setup/pgbench
-runbench_locks.sh
 <ctrl>b,n
-su – postgres
+./runbench_locks.sh
+<ctrl>b,n
 psql bench
+\x
 select * from pg_stat_activity;
+\x
+select now()-xact_start as xact_age, 
+    now()-state_change as idle_time,
+    pid, query
+from pg_stat_activity
+where state = 'idle in transaction';
 
-select pg_cancel_backend(pid)
+select pg_terminate_backend(pid)
 from pg_stat_activity
 where state = 'idle in transaction'
 and state_change < ( now() - interval '10 seconds');
 
-select * from pg_stat_activity;
+select now()-xact_start as xact_age, 
+    now()-state_change as idle_time,
+    pid, query
+from pg_stat_activity
+where state = 'idle in transaction';
 
 explain analyze
 ---------------
 
+\c libdata
 explain select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
 explain analyze select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
 explain ( analyze on, buffers on ) select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
 explain ( analyze on, format yaml ) select count(*) from loans where checkout_date between '2011-01-01' and '2011-03-31';
 
-\i /setup/postgres/explain_quarterly_report.sql
+\i ~/archive/explain_quarterly_report.sql
 
 end vagrant
 -----------
@@ -310,3 +360,10 @@ end vagrant
 exit
 exit
 vagrant destroy
+
+exit docker
+-----------
+
+<ctrl>b,d
+exit
+

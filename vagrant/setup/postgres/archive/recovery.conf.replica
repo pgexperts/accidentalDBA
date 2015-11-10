@@ -1,0 +1,81 @@
+# -------------------------------
+# PostgreSQL recovery config file
+# -------------------------------
+#
+# Edit this file to provide the parameters that PostgreSQL needs to
+# perform an archive recovery of a database, or to act as a replication
+# standby.
+#
+# If "recovery.conf" is present in the PostgreSQL data directory, it is
+# read on postmaster startup.  After successful recovery, it is renamed
+# to "recovery.done" to ensure that we do not accidentally re-enter
+# archive recovery or standby mode.
+#
+# This file consists of lines of the form:
+#
+#   name = value
+#
+# Comments are introduced with '#'.
+#
+# The complete list of option names and allowed values can be found
+# in the PostgreSQL documentation.
+#
+#---------------------------------------------------------------------------
+# STANDBY SERVER PARAMETERS
+#---------------------------------------------------------------------------
+
+# below parameters should be set for streaming replication servers
+
+# standby_mode
+#
+# When standby_mode is enabled, the PostgreSQL server will work as a
+# standby. It will continuously wait for the additional XLOG records, using
+# restore_command and/or primary_conninfo.
+
+standby_mode = on
+
+# primary_conninfo
+#
+# If set, the PostgreSQL server will try to connect to the primary using this
+# connection string and receive XLOG records continuously.
+
+primary_conninfo = 'host=localhost port=5432 user=postgres'
+
+# recovery_target_timeline
+# Set to 'latest' to follow the master if it switches timeline
+# requires version 9.3 or WAL file archiving to be effective
+
+recovery_target_timeline = 'latest'
+
+#---------------------------------------------------
+# WAL File replication parameters
+#---------------------------------------------------
+
+# set the below if you are also doing replication via WAL file
+# archiving, with or without streaming
+
+# restore command
+# specifies the shell command that is executed to copy log files
+# back from archival storage.  The command string may contain %f,
+# which is replaced by the name of the desired log file, and %p,
+# which is replaced by the absolute path to copy the log file to.
+#
+# This parameter is *required* for an archive recovery, but optional
+# for streaming replication.
+#
+# It is important that the command return nonzero exit status on failure.
+# The command *will* be asked for log files that are not present in the
+# archive; it must return nonzero when so asked.
+#
+# NOTE that the basename of %p will be different from %f; do not
+# expect them to be interchangeable.
+
+# restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'
+
+# archive_cleanup_command
+#
+# specifies an optional shell command to execute at every restartpoint.
+# This can be useful for cleaning up the archive of a standby server.
+
+# archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/wal_archive %r'
+
